@@ -26,15 +26,36 @@
 #       - say-hello
 
 
+# version: 2.1
+
+# jobs:
+#   build:
+#     docker:
+#       - image: cimg/node:14.17  # Use the CircleCI Node image, version 14.17
+#     steps:
+#       - checkout  # Checks out the code in the project's repository
+#       - run: npm install  # Install dependencies
+#       - run: npm test  # Run tests
+#       - run: npm run build  # Build the project
+
 version: 2.1
 
-jobs:
-  build:
-    docker:
-      - image: cimg/node:14.17  # Use the CircleCI Node image, version 14.17
-    steps:
-      - checkout  # Checks out the code in the project's repository
-      - run: npm install  # Install dependencies
-      - run: npm test  # Run tests
-      - run: npm run build  # Build the project
+orbs:
+  node: circleci/node@4.7.0
 
+jobs:
+  build_and_test:
+    docker:
+      - image: cimg/node:16.13.0  # Specify the Node.js version
+    steps:
+      - checkout  # Checks out the code in the project directory
+      - node/install-packages:  # Install npm dependencies
+          pkg-manager: npm
+      - run: npm run build  # Build the React app
+      - run: npm test  # Run your test suite
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build_and_test
