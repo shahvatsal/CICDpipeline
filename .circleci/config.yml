@@ -72,9 +72,6 @@ jobs:
       - image: cimg/node:lts
     steps:
       - checkout
-      - run: 
-          name: Install Python venv
-          command: sudo apt-get update && sudo apt-get install python3-venv
       - run: npm install
       - run: npm run build
       - persist_to_workspace:
@@ -88,14 +85,12 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run: 
-          name: Install Python venv
-          command: sudo apt-get update && sudo apt-get install python3-venv
       - aws-s3/sync:
           from: build
           to: 's3://sim3bucket'
           arguments: |
             --acl public-read
+          overwrite: true
 
 workflows:
   version: 2
