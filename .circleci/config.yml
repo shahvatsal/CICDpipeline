@@ -29,18 +29,20 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Install AWS CLI and Deploy
+          name: Install AWS CLI
           command: |
             sudo apt-get update
             sudo apt-get install -y python3-pip python3-dev
             pip3 install awscli
-            aws configure set region $AWS_REGION --profile default
-            aws-s3/sync:
-              from: build
-              to: 's3://sim3bucket'
-              arguments: |
-                --acl public-read
-              overwrite: true
+      - run:
+          name: Configure AWS CLI
+          command: aws configure set region $AWS_REGION --profile default
+      - aws-s3/sync:
+          from: build
+          to: 's3://sim3bucket'
+          arguments: |
+            --acl public-read
+          overwrite: true
 
 workflows:
   version: 2
