@@ -92,7 +92,7 @@ jobs:
           command: sudo apt-get update && sudo apt-get install -y python3-venv
       - aws-s3/sync:
           from: build
-          to: 's3://sim3bucket'
+          to: 's3://YOUR_S3_BUCKET_NAME'
           arguments: |
             --acl public-read
           overwrite: true
@@ -105,6 +105,4 @@ workflows:
       - deploy:
           requires:
             - build
-
-
 
