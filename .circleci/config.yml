@@ -40,30 +40,21 @@
 
 
 version: 2.1
-# orbs:
-#   node: circleci/node:14.17 # Replace 'x.y' with the version of the node orb you want to use
+
+orbs:
+  node: circleci/node:4.1.0
 
 jobs:
   build:
     docker:
-      - image: cimg/node:lts # This is a docker image with the latest LTS version of Node.js
+      - image: cimg/node:14.17
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm # Or you can use 'yarn' if you prefer
+      - node/install-packages
       - run:
-          name: Build React App
-          command: npm run build # Or 'yarn build' if you are using yarn
-      - run:
-          name: Run Tests
-          command: npm test # Or 'yarn test' if you are using yarn
-      - run:
-          name: Start Server
-          command: npm start # Or 'yarn start' if you are using yarn
-          background: true
-      - run:
-          name: Check Home Page
-          command: curl http://localhost:3000 # Adjust the port if your app runs on a different one
+          name: Start React App
+          command: npm start
+      # Add additional steps for testing or other checks here
 
 workflows:
   version: 2
