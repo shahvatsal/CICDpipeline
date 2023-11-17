@@ -41,7 +41,7 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.1.0  # Use the latest version of the Node orb
+  node: circleci/node@4.1.0
 
 jobs:
   build:
@@ -49,14 +49,19 @@ jobs:
       name: node/default
     steps:
       - checkout
+      - restore_cache:
+          key: v2-node-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - node/install-packages
+      - save_cache:
+          key: v2-node-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
       - run:
-          name: Start React App
-          command: npm start
-      # Here you can add additional steps, like running tests
+          name: Run Tests
+          command: npm test
 
 workflows:
-  build:
+  build_and_test:
     jobs:
       - build
 
