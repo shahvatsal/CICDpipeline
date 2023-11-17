@@ -38,26 +38,24 @@
 #       - run: npm test  # Run tests
 #       - run: npm run build  # Build the project
 
-
 version: 2.1
 
 orbs:
-  node: circleci/node:4.1.0
+  node: circleci/node@4.1.0  # Use the latest version of the Node orb
 
 jobs:
   build:
-    docker:
-      - image: cimg/node:14.17
+    executor:
+      name: node/default
     steps:
       - checkout
       - node/install-packages
       - run:
           name: Start React App
           command: npm start
-      # Add additional steps for testing or other checks here
+      # Here you can add additional steps, like running tests
 
 workflows:
-  version: 2
   build_and_test:
     jobs:
       - build
