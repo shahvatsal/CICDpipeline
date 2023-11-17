@@ -1,65 +1,3 @@
-# # Use the latest 2.1 version of CircleCI pipeline process engine.
-# # See: https://circleci.com/docs/configuration-reference
-# version: 2.1
-
-# # Define a job to be invoked later in a workflow.
-# # See: https://circleci.com/docs/configuration-reference/#jobs
-# jobs:
-#   say-hello:
-#     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-#     # See: https://circleci.com/docs/configuration-reference/#executor-job
-#     docker:
-#       - image: cimg/base:stable
-#     # Add steps to the job
-#     # See: https://circleci.com/docs/configuration-reference/#steps
-#     steps:
-#       - checkout
-#       - run:
-#           name: "Say hello"
-#           command: "echo Hello, World!"
-
-# # Orchestrate jobs using workflows
-# # See: https://circleci.com/docs/configuration-reference/#workflows
-# workflows:
-#   say-hello-workflow:
-#     jobs:
-#       - say-hello
-
-
-# version: 2.1
-
-# jobs:
-#   build:
-#     docker:
-#       - image: cimg/node:14.17  # Use the CircleCI Node image, version 14.17
-#     steps:
-#       - checkout  # Checks out the code in the project's repository
-#       - run: npm install  # Install dependencies
-#       - run: npm test  # Run tests
-#       - run: npm run build  # Build the project
-
-# version: 2.1
-
-# orbs:
-#   node: circleci/node@4.7.0
-
-# jobs:
-#   build_and_test:
-#     docker:
-#       - image: cimg/node:16.13.0  # Specify the Node.js version
-#     steps:
-#       - checkout  # Checks out the code in the project directory
-#       - node/install-packages:  # Install npm dependencies
-#           pkg-manager: npm
-#       - run: npm run build  # Build the React app
-#       - run: npm test  # Run your test suite
-
-# workflows:
-#   version: 2
-#   build_and_deploy:
-#     jobs:
-#       - build_and_test
-
 version: 2.1
 
 orbs:
@@ -72,11 +10,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dependencies and build
+          name: Install dependencies
           command: |
-            sudo apt-get update && sudo apt-get install -y python3-venv
-            npm install
-            npm run build
+            sudo apt-get update
+            sudo apt-get install -y python3-pip python3-dev
+            pip3 install awscli
+      - run: npm install
+      - run: npm run build
       - persist_to_workspace:
           root: .
           paths:
@@ -89,13 +29,11 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Configure AWS CLI and Deploy
+          name: Install AWS CLI and Deploy
           command: |
-            sudo apt-get update && sudo apt-get install -y python3-venv
-            if [ -z "${AWS_REGION}" ]; then
-              echo "AWS_REGION environment variable is not set. Exiting."
-              exit 1
-            fi
+            sudo apt-get update
+            sudo apt-get install -y python3-pip python3-dev
+            pip3 install awscli
             aws configure set region $AWS_REGION --profile default
             aws-s3/sync:
               from: build
@@ -112,5 +50,3 @@ workflows:
       - deploy:
           requires:
             - build
-
-
