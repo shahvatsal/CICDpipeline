@@ -38,24 +38,65 @@
 #       - run: npm test  # Run tests
 #       - run: npm run build  # Build the project
 
+# version: 2.1
+
+# orbs:
+#   node: circleci/node@4.7.0
+
+# jobs:
+#   build_and_test:
+#     docker:
+#       - image: cimg/node:16.13.0  # Specify the Node.js version
+#     steps:
+#       - checkout  # Checks out the code in the project directory
+#       - node/install-packages:  # Install npm dependencies
+#           pkg-manager: npm
+#       - run: npm run build  # Build the React app
+#       - run: npm test  # Run your test suite
+
+# workflows:
+#   version: 2
+#   build_and_deploy:
+#     jobs:
+#       - build_and_test
+
+
 version: 2.1
 
 orbs:
-  node: circleci/node@4.7.0
+  aws-s3: circleci/aws-s3@1.0.16
 
 jobs:
-  build_and_test:
+  build:
     docker:
-      - image: cimg/node:16.13.0  # Specify the Node.js version
+      - image: cimg/node:lts
     steps:
-      - checkout  # Checks out the code in the project directory
-      - node/install-packages:  # Install npm dependencies
-          pkg-manager: npm
-      - run: npm run build  # Build the React app
-      - run: npm test  # Run your test suite
+      - checkout
+      - run: npm install
+      - run: npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+
+  deploy:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - attach_workspace:
+          at: .
+      - aws-s3/sync:
+          from: build
+          to: 's3://sim3bucket'
+          arguments: |
+            --acl public-read
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - build_and_test
+      - build
+      - deploy:
+          requires:
+            - build
+
