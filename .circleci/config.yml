@@ -26,36 +26,15 @@
 #       - say-hello
 
 
-# version: 2.1
-
-# jobs:
-#   build:
-#     docker:
-#       - image: cimg/node:14.17  # Use the CircleCI Node image, version 14.17
-#     steps:
-#       - checkout  # Checks out the code in the project's repository
-#       - run: npm install  # Install dependencies
-#       - run: npm test  # Run tests
-#       - run: npm run build  # Build the project
 version: 2.1
-
-orbs:
-  node: circleci/node@4.1.0  # Use the Node orb for convenience
 
 jobs:
   build:
-    executor:
-      name: node/default  # Using the default Node executor
+    docker:
+      - image: cimg/node:14.17  # Use the CircleCI Node image, version 14.17
     steps:
-      - checkout  # Check out the code in the project directory
-      - node/install-packages  # Install npm packages
-      - run:
-          name: Run Tests
-          command: npm test  # Run your tests
-
-workflows:
-  build_and_test:
-    jobs:
-      - build
-
+      - checkout  # Checks out the code in the project's repository
+      - run: npm install  # Install dependencies
+      - run: npm test  # Run tests
+      - run: npm run build  # Build the project
 
