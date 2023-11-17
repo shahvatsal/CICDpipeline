@@ -56,7 +56,7 @@ jobs:
       # Here you can add additional steps, like running tests
 
 workflows:
-  build_and_test:
+  build:
     jobs:
       - build
 
