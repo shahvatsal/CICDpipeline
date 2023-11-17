@@ -41,7 +41,7 @@
 
 version: 2.1
 orbs:
-  node: circleci/node@14.17# Replace 'x.y' with the version of the node orb you want to use
+  node: circleci/node@14.17 # Replace 'x.y' with the version of the node orb you want to use
 
 jobs:
   build:
