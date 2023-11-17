@@ -72,10 +72,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Update and Install Python venv
-          command: sudo apt-get update && sudo apt-get install -y python3-venv
-      - run: npm install
-      - run: npm run build
+          name: Install dependencies and build
+          command: |
+            sudo apt-get update && sudo apt-get install -y python3-venv
+            npm install
+            npm run build
       - persist_to_workspace:
           root: .
           paths:
@@ -88,14 +89,20 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Update and Install Python venv
-          command: sudo apt-get update && sudo apt-get install -y python3-venv
-      - aws-s3/sync:
-          from: build
-          to: 's3://YOUR_S3_BUCKET_NAME'
-          arguments: |
-            --acl public-read
-          overwrite: true
+          name: Configure AWS CLI and Deploy
+          command: |
+            sudo apt-get update && sudo apt-get install -y python3-venv
+            if [ -z "${AWS_REGION}" ]; then
+              echo "AWS_REGION environment variable is not set. Exiting."
+              exit 1
+            fi
+            aws configure set region $AWS_REGION --profile default
+            aws-s3/sync:
+              from: build
+              to: 's3://sim3bucket'
+              arguments: |
+                --acl public-read
+              overwrite: true
 
 workflows:
   version: 2
@@ -105,4 +112,5 @@ workflows:
       - deploy:
           requires:
             - build
+
 
