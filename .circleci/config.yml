@@ -37,31 +37,25 @@
 #       - run: npm install  # Install dependencies
 #       - run: npm test  # Run tests
 #       - run: npm run build  # Build the project
-
 version: 2.1
 
 orbs:
-  node: circleci/node@4.1.0
+  node: circleci/node@4.1.0  # Use the Node orb for convenience
 
 jobs:
   build:
     executor:
-      name: node/default
+      name: node/default  # Using the default Node executor
     steps:
-      - checkout
-      - restore_cache:
-          key: v2-node-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - node/install-packages
-      - save_cache:
-          key: v2-node-{{ .Branch }}-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
+      - checkout  # Check out the code in the project directory
+      - node/install-packages  # Install npm packages
       - run:
           name: Run Tests
-          command: npm test
+          command: npm test  # Run your tests
 
 workflows:
   build_and_test:
     jobs:
       - build
+
 
