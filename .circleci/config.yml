@@ -10,6 +10,7 @@ jobs:
     steps:
       - checkout
       - run: npm install
+      - run: npm run lint  # Code quality check step
       - run: npm test  # Run your test suite
       - run: npm run build  # Build your project
 
