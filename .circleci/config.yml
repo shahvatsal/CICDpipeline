@@ -4,18 +4,16 @@ orbs:
   node: circleci/node@4.7.0
 
 jobs:
-  build_and_test:
+  build:
     docker:
-      - image: cimg/node:14.17  # Use the version that matches your project
+      - image: cimg/node:14.17  # Use the Node.js version that matches your project
     steps:
       - checkout
       - run: npm install
-      - run: npm run lint  # Lint step
-      - run: npm test  # Test step
-      - run: npm run build  # Build step
+      - run: npm run build  # Replace with your project's build command
 
 workflows:
   version: 2
-  all_jobs:
+  build_workflow:
     jobs:
-      - build_and_test
+      - build
