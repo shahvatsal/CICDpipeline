@@ -1,54 +1,21 @@
 version: 2.1
 
 orbs:
-  aws-s3: circleci/aws-s3@1.0.16
+  node: circleci/node@4.7.0
 
 jobs:
   build:
     docker:
-      - image: cimg/node:lts
+      - image: cimg/node:14.17
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y python3-pip python3-dev
-            pip3 install awscli
-      - run: npm install
-      - run: npm run build
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build
-
-  deploy:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Install AWS CLI
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y python3-pip python3-dev
-            pip3 install awscli
-      - run:
-          name: Configure AWS CLI
-          command: aws configure set region $AWS_REGION --profile default
-      - aws-s3/sync:
-          from: build
-          to: 's3://sim3bucket'
-          arguments: |
-            --acl public-read
-          overwrite: true
+      - node/with-cache:
+          steps:
+            - run: npm install
+            - run: npm test
 
 workflows:
   version: 2
-  build_and_deploy:
+  build_and_test:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
