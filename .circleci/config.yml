@@ -19,6 +19,6 @@ jobs:
 
 workflows:
   version: 2
-  build-and-test:
+  buildfrontend:
     jobs:
       - build
